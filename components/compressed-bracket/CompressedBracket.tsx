@@ -28,7 +28,7 @@ export function CompressedBracket({
       <div className={styles.shell}>
         <div className={styles.regionPair}>
           <CompressedRegion
-            data={m.east}
+            data={m.south}
             side="left"
             selectedGameId={selectedGameId}
             onSelectGame={onSelectGame}
@@ -116,7 +116,7 @@ export function CompressedBracket({
 
         <div className={styles.regionPair}>
           <CompressedRegion
-            data={m.south}
+            data={m.east}
             side="left"
             selectedGameId={selectedGameId}
             onSelectGame={onSelectGame}
