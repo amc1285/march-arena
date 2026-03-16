@@ -129,7 +129,7 @@ export function MatchupStatsPanel({
   if (!game) {
     if (panel) {
       return (
-        <div className="px-4 py-10 text-center">
+        <div className="px-2 py-10 text-center sm:px-3">
           <p className="text-[13px] font-medium text-[#121213]">
             Select a matchup
           </p>
@@ -190,7 +190,8 @@ export function MatchupStatsPanel({
     ? "overflow-hidden"
     : "bg-white rounded-lg shadow-sm border border-[#dcdddf] overflow-hidden";
   const sectionBorder = panel ? "border-[#e4e5e7]" : "border-[#dcdddf]";
-  const sectionPad = panel ? "px-4 py-4" : "p-4";
+  /** Sidebar panel: minimal horizontal inset so matchup uses full rail width */
+  const sectionPad = panel ? "px-2 py-4 sm:px-2.5" : "p-4";
   const labelClass = panel
     ? "text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8b8d8f]"
     : "text-[12px] text-[#6c6e6f] uppercase tracking-wide";

@@ -11,6 +11,12 @@ import {
   findCompressedGameById,
   getInProgressCompressedGameIds,
 } from "@/lib/bracket-to-compressed";
+import { SIMULATE_TEMPORARILY_DISABLED } from "@/lib/simulate-gate";
+
+const SIM_UI_ENABLED =
+  !SIMULATE_TEMPORARILY_DISABLED &&
+  (process.env.NODE_ENV === "development" ||
+    process.env.NEXT_PUBLIC_SIMULATE_ENABLED === "true");
 
 function inferSimPhase(b: BracketType | SimulatedBracket): string {
   if (!b.firstFour.every((g) => g.winner)) return "First Four";
@@ -31,10 +37,59 @@ function inferSimPhase(b: BracketType | SimulatedBracket): string {
   return "Complete";
 }
 
-export default function Home() {
+function ProductionAside({
+  bracket,
+  selectedGameId,
+}: {
+  bracket: BracketType | SimulatedBracket;
+  selectedGameId: string | null;
+}) {
+  const selectedGame = useMemo(
+    () => findCompressedGameById(bracket, selectedGameId),
+    [bracket, selectedGameId]
+  );
+  return (
+    <aside
+      className="flex w-full shrink-0 flex-col overflow-hidden border-t border-[#e8e8e8] bg-white max-h-[50dvh] md:max-h-[42dvh] lg:max-h-none lg:w-[28%] lg:min-w-0 lg:border-l lg:border-t-0"
+      aria-label="Matchup details"
+    >
+      <div className="shrink-0 px-6 pb-6 pt-6 lg:px-8 lg:pb-8 lg:pt-8">
+        <h1 className="text-[22px] font-bold tracking-tight text-[#1a1a1a]">
+          March Madness AI
+        </h1>
+        <p className="mt-3 text-[14px] leading-relaxed text-[#5c5c5c]">
+          This project simulates the full bracket with an AI analyst (First Four
+          through the championship) using KenPom-style stats, seed history, and
+          matchup context. The live sim isn&apos;t hosted here—the implementation
+          is in the repo if you want to run it yourself.
+        </p>
+        <a
+          href="https://github.com/leerob/march-arena"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 flex items-center justify-center gap-2 rounded-lg bg-[#c8102e] px-5 py-3.5 text-[15px] font-semibold text-white shadow-sm transition hover:bg-[#a50d25]"
+        >
+          View the code
+        </a>
+        <p className="mt-3 text-[12px] leading-relaxed text-[#8a8a8a]">
+          You will need to bring your own API key to run the simulation locally
+          (see repo README).
+        </p>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden border-t border-[#eee]">
+        <MatchupStatsPanel
+          game={selectedGame}
+          variant="panel"
+          includeBracketRoundNotes
+        />
+      </div>
+    </aside>
+  );
+}
+
+function LocalSimHome() {
   const [bracket, setBracket] = useState<BracketType | SimulatedBracket>(BRACKET_2026);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
-  /** App follows in-progress games until the user selects a matchup during the run. */
   const [simFocusManaged, setSimFocusManaged] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [starting, setStarting] = useState(false);
@@ -50,9 +105,7 @@ export default function Home() {
   }, []);
 
   const { runSimulation, running, error } = useSimulation(
-    (result) => {
-      setBracket(result);
-    },
+    (result) => setBracket(result),
     handleBracketUpdate
   );
 
@@ -81,9 +134,7 @@ export default function Home() {
   const prevCompleteRef = useRef(false);
 
   useEffect(() => {
-    if (isComplete && !prevCompleteRef.current) {
-      setShowConfetti(true);
-    }
+    if (isComplete && !prevCompleteRef.current) setShowConfetti(true);
     prevCompleteRef.current = isComplete;
   }, [isComplete]);
 
@@ -100,7 +151,6 @@ export default function Home() {
     if (!running) setStarting(false);
   }, [running]);
 
-  // Managed focus: stay on the live in-progress block; re-anchor when the chunk advances.
   useEffect(() => {
     if (!running || !simFocusManaged) return;
     const ids = getInProgressCompressedGameIds(bracket);
@@ -108,7 +158,6 @@ export default function Home() {
     setSelectedGameId((prev) => (prev && ids.includes(prev) ? prev : ids[0]!));
   }, [bracket, running, simFocusManaged]);
 
-  // Cycle through concurrent in-progress games so the panel visits each sim in the chunk.
   useEffect(() => {
     if (!running || !simFocusManaged) return;
     const intervalMs = 2800;
@@ -123,7 +172,6 @@ export default function Home() {
     return () => window.clearInterval(id);
   }, [running, simFocusManaged]);
 
-  // Scroll focused matchup into view while app-managed.
   useEffect(() => {
     if (!running || !simFocusManaged || !selectedGameId) return;
     if (typeof window === "undefined") return;
@@ -137,7 +185,7 @@ export default function Home() {
   }, [selectedGameId, running, simFocusManaged]);
 
   return (
-    <div className="flex h-[calc(100dvh-3rem)] flex-col overflow-hidden bg-[#ececec] lg:flex-row relative">
+    <div className="relative flex h-[calc(100dvh-3rem)] flex-col overflow-hidden bg-[#ececec] lg:flex-row">
       {showConfetti && (
         <Confetti
           width={typeof window !== "undefined" ? window.innerWidth : 800}
@@ -193,11 +241,7 @@ export default function Home() {
               className="flex items-center justify-center gap-2 rounded-lg bg-[#c8102e] px-5 py-3.5 text-[15px] font-semibold text-white shadow-sm transition hover:bg-[#a50d25] disabled:opacity-70"
             >
               {starting && (
-                <svg
-                  className="h-4 w-4 animate-spin"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -264,7 +308,33 @@ export default function Home() {
           </>
         )}
       </aside>
+    </div>
+  );
+}
 
+export default function Home() {
+  const [bracket] = useState<BracketType | SimulatedBracket>(BRACKET_2026);
+  const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
+  const onSelectGame = useCallback((game: Game) => setSelectedGameId(game.id), []);
+
+  if (SIM_UI_ENABLED) {
+    return <LocalSimHome />;
+  }
+
+  return (
+    <div className="flex h-[calc(100dvh-3rem)] flex-col overflow-hidden bg-[#ececec] lg:flex-row relative">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:w-[72%] lg:shrink-0">
+        <div className="min-h-0 flex-1 overflow-auto bg-[#ececec]">
+          <div className="min-w-max p-3 pb-8">
+            <CompressedBracket
+              bracket={bracket}
+              selectedGameId={selectedGameId}
+              onSelectGame={onSelectGame}
+            />
+          </div>
+        </div>
+      </div>
+      <ProductionAside bracket={bracket} selectedGameId={selectedGameId} />
     </div>
   );
 }

@@ -1,21 +1,21 @@
 # March Madness AI
 
-An AI-powered NCAA Tournament bracket simulator built with Next.js and Claude Haiku. Watch the full 2026 bracket unfold in real time as an AI analyst picks every game, from the First Four through the national championship, using KenPom ratings, historical seed data, and matchup context.
+An AI-powered NCAA Tournament bracket simulator built with Next.js and Claude Haiku. **Production** (e.g. marcharena.com): sim API + full sim UI are off. **`pnpm dev` locally**: both are on so the game works after clone + API key.
 
-Try it out at https://www.marcharena.com.
+Site: https://www.marcharena.com (bracket + “View the code”; no hosted sim).
 
-## How It Works
+## How It Works (local / fork)
 
-1. **Hit "Start simulation"** — the app kicks off a durable workflow that simulates every tournament game
-2. **Games stream in round by round** — results appear on the bracket as NDJSON updates, with the sidebar cycling through active matchups
-3. **Each pick is made by Claude 4.5 Haiku** — the model receives team profiles, KenPom stats, venue/travel context, historical seed matchup records (1985–2025), and upset indicators, then returns a structured `{ winner, reasoning }` response
-4. **Win probabilities** drive the analysis — an ensemble of KenPom logistic (60%), Log5 (25%), and seed-based (15%) models
-5. **Results aggregate into a leaderboard** — champions, Final Four appearances, and upset wins across simulation runs, stored in Redis
+1. **Configure an Anthropic API key** — required to call the model from your machine
+2. **Run `pnpm dev`** — sim UI + `/api/simulate` are on in development. Set `SIMULATE_TEMPORARILY_DISABLED = true` in `lib/simulate-gate.ts` to turn sim off locally. For `next start`, use `SIMULATE_ENABLED` + `NEXT_PUBLIC_SIMULATE_ENABLED`. Or `pnpm ai-sim-batch` / `simulateBracketLocally`
+3. **Each pick uses Claude (Haiku-class)** — team profiles, KenPom stats, venue/travel context, historical seed matchup records (1985–2025), and upset indicators → structured `{ winner, reasoning }`
+4. **Win probabilities** — ensemble of KenPom logistic (60%), Log5 (25%), and seed-based (15%) models
+5. **Leaderboard (optional)** — Redis-backed aggregation when you run sims that call `saveSimulationResults`
 
 ## Stack
 
 - **Next.js 16** (App Router) + **React 19**
-- **AI SDK** with **Claude 4.5 Haiku** for structured game picks
+- **AI SDK** + **Anthropic** for structured game picks (BYOK)
 - **Redis** (ioredis) for leaderboard persistence
 - **Tailwind CSS 4** for styling
-- **Vercel Firewall** for rate limiting
+- **Vercel Firewall** for rate limiting (when sim API is enabled)
