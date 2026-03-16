@@ -1,4 +1,5 @@
 import type { SimulatedBracket, Team } from "@/lib/bracket-data";
+import { BRACKET_2026 } from "@/lib/bracket-data";
 import { getRedis } from "@/lib/redis";
 
 const LEADERBOARD_KEY = "leaderboard";
@@ -180,8 +181,6 @@ export async function getLeaderboardStats(): Promise<LeaderboardData> {
 
   const totalSimulations = parseInt(raw["total"] ?? "0", 10);
 
-  // Build a lookup of team metadata from the bracket
-  const { BRACKET_2026 } = await import("@/lib/bracket-data");
   const teamMeta = new Map<
     number,
     { name: string; seed: number; region: string; conference: string }

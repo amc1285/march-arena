@@ -512,39 +512,6 @@ export function getFirstSecondRoundVenueForGameId(
   return schedule.firstSecondRound.venues[idx];
 }
 
-// Helper to get location string for a game based on round
-export function getGameLocation(
-  schedule: TournamentSchedule,
-  roundType: "firstFour" | "firstRound" | "secondRound" | "sweet16" | "elite8" | "finalFour" | "championship",
-  regionName?: RegionName,
-  gameId?: string
-): string {
-  switch (roundType) {
-    case "firstFour":
-      return `${schedule.firstFour.venue.city}, ${schedule.firstFour.venue.state} - ${schedule.firstFour.venue.arena}`;
-    case "firstRound":
-    case "secondRound":
-      if (gameId) {
-        const v = getFirstSecondRoundVenueForGameId(gameId, schedule);
-        if (v) return `${v.city}, ${v.state} - ${v.arena}`;
-      }
-      return "Various locations";
-    case "sweet16":
-    case "elite8":
-      if (regionName && schedule.regionals[regionName]) {
-        const regional = schedule.regionals[regionName];
-        return `${regional.venue.city}, ${regional.venue.state} - ${regional.venue.arena}`;
-      }
-      return "Regional site";
-    case "finalFour":
-      return `${schedule.finalFour.venue.city}, ${schedule.finalFour.venue.state} - ${schedule.finalFour.venue.arena}`;
-    case "championship":
-      return `${schedule.championship.venue.city}, ${schedule.championship.venue.state} - ${schedule.championship.venue.arena}`;
-    default:
-      return "";
-  }
-}
-
 // 2026 NCAA Tournament — pairings/seeds from ncaa.com/march-madness-live/bracket (March 2026)
 export const BRACKET_2026: Bracket = {
   year: 2026,

@@ -37,9 +37,7 @@ export function TeamRow({
           : "min-h-[20px] px-1.5 py-0.5"
       }`}
     >
-      {/* Left side: Logo, Rank, Name */}
       <div className="BracketCell__Competitor flex items-center min-w-0 gap-1">
-        {/* Logo: high-res src, small display = sharp on retina */}
         <div
           className={`BracketCell__Logo shrink-0 flex items-center justify-center ${compact ? "h-[14px] w-[14px] sm:h-[16px] sm:w-[16px]" : "h-[18px] w-[18px]"}`}
         >
@@ -67,7 +65,6 @@ export function TeamRow({
             />
           )}
         </div>
-        {/* Rank/Seed */}
         <div
           className={`BracketCell__Rank text-right shrink-0 text-[#9a9c9d] ${
             compact ? "min-w-[10px] text-[9px] sm:min-w-[12px] sm:text-[10px]" : "text-[10px] min-w-[12px]"
@@ -75,7 +72,6 @@ export function TeamRow({
         >
           {team.seed}
         </div>
-        {/* Name */}
         <div
           className={`BracketCell__Name min-w-0 flex-1 ${
             compact && compactMultiline
@@ -93,7 +89,6 @@ export function TeamRow({
         </div>
       </div>
 
-      {/* Right side: Score + Winner Icon */}
       {score !== undefined && (
         <div
           className={`BracketCell__Score relative shrink-0 font-mono font-bold flex items-center ${

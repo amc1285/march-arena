@@ -14,7 +14,6 @@ export default async function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-[#f7f7f7]">
       <div className="w-full max-w-[1200px] mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-[24px] font-bold text-[#121213] leading-tight">
@@ -39,10 +38,7 @@ export default async function LeaderboardPage() {
           </div>
         ) : (
           <>
-            {/* Insights bar */}
             <Insights data={data} />
-
-            {/* Main table */}
             <LeaderboardTable data={data} />
           </>
         )}
@@ -59,7 +55,7 @@ function Insights({
   const { totalSimulations, teams } = data;
   if (teams.length === 0) return null;
 
-  const topChampion = teams[0]; // already sorted by champion count
+  const topChampion = [...teams].sort((a, b) => b.champion - a.champion)[0];
   const bestCinderella = [...teams]
     .filter((t) => t.seed >= 10)
     .sort((a, b) => b.finalFour - a.finalFour)[0];

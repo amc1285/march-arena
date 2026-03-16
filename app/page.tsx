@@ -37,8 +37,11 @@ export default function Home() {
   /** App follows in-progress games until the user selects a matchup during the run. */
   const [simFocusManaged, setSimFocusManaged] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [starting, setStarting] = useState(false);
   const bracketRef = useRef(bracket);
-  bracketRef.current = bracket;
+  useEffect(() => {
+    bracketRef.current = bracket;
+  }, [bracket]);
 
   const handleBracketUpdate = useCallback((update: BracketType | SimulatedBracket) => {
     setBracket(update);
@@ -74,8 +77,6 @@ export default function Home() {
 
   const phase = running ? inferSimPhase(bracket) : null;
   const showOnboarding = !hasStarted && !isComplete;
-
-  const [starting, setStarting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const prevCompleteRef = useRef(false);
 

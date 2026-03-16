@@ -1,7 +1,5 @@
 // Static fun facts for March Madness organized by round and matchup type
 
-import type { SimulationStage } from "@/lib/simulation-shared";
-
 export type RoundType =
   | "first-four"
   | "round-64"
@@ -222,34 +220,6 @@ export function getRoundFactsForBracketGameId(gameId: string): string[] {
 }
 
 /**
- * Get fun facts relevant to the current stage
- */
-export function getFactsForStage(stage: SimulationStage): string[] {
-  switch (stage) {
-    case "first-four":
-      return ROUND_FUN_FACTS["first-four"];
-    case "south":
-    case "east":
-    case "west":
-    case "midwest":
-      // For regional stages, return a mix of round facts
-      return [
-        ...ROUND_FUN_FACTS["round-64"].slice(0, 2),
-        ...ROUND_FUN_FACTS["round-32"].slice(0, 1),
-        ...ROUND_FUN_FACTS["sweet-16"].slice(0, 1),
-        ...ROUND_FUN_FACTS["elite-8"].slice(0, 1),
-      ];
-    case "finals":
-      return [
-        ...ROUND_FUN_FACTS["final-four"],
-        ...ROUND_FUN_FACTS["championship"].slice(0, 2),
-      ];
-    default:
-      return ROUND_FUN_FACTS["round-64"];
-  }
-}
-
-/**
  * Get fun facts for a specific seed matchup
  */
 export function getFactsForMatchup(seed1: number, seed2: number): string[] {
@@ -266,33 +236,3 @@ export function getFactsForTeam(teamName: string): string[] {
   return TEAM_FUN_FACTS[teamName] || [];
 }
 
-/**
- * Get a random fact for the current context
- */
-export function getRandomFact(
-  stage: SimulationStage,
-  seed1?: number,
-  seed2?: number,
-  teamName?: string
-): string {
-  const allFacts: string[] = [];
-
-  // Add stage facts
-  allFacts.push(...getFactsForStage(stage));
-
-  // Add matchup-specific facts if seeds provided
-  if (seed1 !== undefined && seed2 !== undefined) {
-    allFacts.push(...getFactsForMatchup(seed1, seed2));
-  }
-
-  // Add team-specific facts if team provided
-  if (teamName) {
-    allFacts.push(...getFactsForTeam(teamName));
-  }
-
-  if (allFacts.length === 0) {
-    return "March Madness is the most exciting tournament in sports!";
-  }
-
-  return allFacts[Math.floor(Math.random() * allFacts.length)];
-}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Tweet } from "react-tweet";
 
 export const metadata: Metadata = {
   title: "About",
@@ -18,7 +19,6 @@ export default function AboutPage() {
           advanced prompting techniques.
         </p>
 
-        {/* How It Works */}
         <Section title="How It Works">
           <p>
             March Madness Arena simulates the entire NCAA Tournament bracket
@@ -33,7 +33,6 @@ export default function AboutPage() {
           </p>
         </Section>
 
-        {/* The AI Model */}
         <Section title="The AI Model">
           <p>
             Each game is simulated using{" "}
@@ -58,7 +57,6 @@ export default function AboutPage() {
           </p>
         </Section>
 
-        {/* Prompting Strategy */}
         <Section title="Prompting Strategy">
           <p>
             The prompting strategy is designed to produce realistic tournament
@@ -110,7 +108,6 @@ export default function AboutPage() {
           </ul>
         </Section>
 
-        {/* Data Sources */}
         <Section title="Data Sources">
           <div className="space-y-4">
             <DataSource
@@ -133,14 +130,13 @@ export default function AboutPage() {
           </div>
         </Section>
 
-        {/* Win Probability Model */}
         <Section title="Win Probability Model">
           <p>
             The ensemble win probability combines three different models to
             provide a baseline prediction:
           </p>
           <div className="bg-white rounded-lg border border-[#dcdddf] p-4 font-mono text-[13px] my-4">
-            <div className="text-[#6c6e6f] mb-2">// Ensemble weights</div>
+            <div className="text-[#6c6e6f] mb-2">{"// Ensemble weights"}</div>
             <div>
               KenPom Logistic: <span className="text-[#0066cc]">60%</span>
             </div>
@@ -168,7 +164,6 @@ export default function AboutPage() {
           </p>
         </Section>
 
-        {/* Realistic Upset Rates */}
         <Section title="Realistic Upset Rates">
           <p>
             The system is calibrated to produce historically accurate upset
@@ -222,7 +217,15 @@ export default function AboutPage() {
           </p>
         </Section>
 
-        {/* Disclaimer */}
+        {/* What People Are Saying */}
+        <Section title="What People Are Saying">
+          <div className="grid gap-4 sm:grid-cols-2 not-prose">
+            <Tweet id="2033356869889396923" />
+            <Tweet id="2033351062212555031" />
+            <Tweet id="2033528719697236409" />
+          </div>
+        </Section>
+
         <Section title="Disclaimer">
           <div className="bg-white rounded-lg border border-[#dcdddf] p-4">
             <p>
@@ -253,7 +256,6 @@ export default function AboutPage() {
           </div>
         </Section>
 
-        {/* Footer */}
         <div className="mt-16 pt-8 border-t border-[#dcdddf]">
           <p className="text-[13px] text-[#6c6e6f] text-center">
             Built for March Madness 2026. Data and predictions are for

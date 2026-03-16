@@ -126,31 +126,6 @@ export const SEED_MATCHUP_STATS: Record<
   },
 };
 
-
-/** Teams with elite traveling fan bases (neutral-site advantage) */
-export const ELITE_FAN_BASES = new Set([
-  "Kentucky",
-  "Kansas",
-  "Duke",
-  "North Carolina",
-  "Michigan St",
-  "Wisconsin",
-  "Arizona",
-  "Gonzaga",
-  "UConn",
-  "Louisville",
-  "Indiana",
-]);
-
-/** Power conferences (tournament experience, depth) */
-export const POWER_CONFERENCES = new Set([
-  "Big Ten",
-  "SEC",
-  "Big 12",
-  "ACC",
-  "Big East",
-]);
-
 /** Get matchup key for seed pair (e.g. "5v12", "8v9") */
 export function getMatchupKey(seed1: number, seed2: number): string {
   const higher = Math.min(seed1, seed2);

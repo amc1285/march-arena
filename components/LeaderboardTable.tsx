@@ -113,7 +113,6 @@ export function LeaderboardTable({ data }: Props) {
 
   return (
     <div className="bg-white rounded-lg border border-[#dcdddf] overflow-hidden">
-      {/* Filters */}
       <div className="flex flex-wrap gap-3 p-4 border-b border-[#dcdddf] bg-[#fafafa]">
         <FilterSelect
           label="Region"
@@ -135,7 +134,6 @@ export function LeaderboardTable({ data }: Props) {
         />
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
@@ -196,7 +194,6 @@ export function LeaderboardTable({ data }: Props) {
                 key={team.teamId}
                 team={team}
                 rank={idx + 1}
-                totalSimulations={totalSimulations}
                 maxWinPct={maxWinPct}
                 pct={pct}
               />
@@ -219,13 +216,11 @@ export function LeaderboardTable({ data }: Props) {
 function TeamRow({
   team,
   rank,
-  totalSimulations,
   maxWinPct,
   pct,
 }: {
   team: TeamLeaderboardStats;
   rank: number;
-  totalSimulations: number;
   maxWinPct: number;
   pct: (n: number) => string;
 }) {
@@ -235,12 +230,10 @@ function TeamRow({
 
   return (
     <tr className="border-b border-[#f0f0f0] hover:bg-[#fafafa] transition-colors">
-      {/* Rank */}
       <td className="px-4 py-3 text-[12px] text-[#6c6e6f] font-mono tabular-nums">
         {rank}
       </td>
 
-      {/* Team name + logo */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 shrink-0">
@@ -260,12 +253,10 @@ function TeamRow({
         </div>
       </td>
 
-      {/* Seed */}
       <td className="px-4 py-3 text-[13px] text-[#6c6e6f] tabular-nums hidden sm:table-cell">
         {team.seed}
       </td>
 
-      {/* Win % with bar */}
       <td className="px-3 py-3 text-right">
         <div className="flex items-center justify-end gap-2">
           <div
@@ -281,27 +272,22 @@ function TeamRow({
         </div>
       </td>
 
-      {/* Champ % */}
       <td className="px-3 py-3 text-right text-[13px] text-[#6c6e6f] tabular-nums font-mono hidden sm:table-cell">
         {pct(team.champion)}%
       </td>
 
-      {/* Final Four % */}
       <td className="px-3 py-3 text-right text-[13px] text-[#4a4b4d] tabular-nums font-mono hidden md:table-cell">
         {pct(team.finalFour)}%
       </td>
 
-      {/* Elite 8 % */}
       <td className="px-3 py-3 text-right text-[13px] text-[#4a4b4d] tabular-nums font-mono hidden md:table-cell">
         {pct(team.elite8)}%
       </td>
 
-      {/* Sweet 16 % */}
       <td className="px-3 py-3 text-right text-[13px] text-[#6c6e6f] tabular-nums font-mono hidden lg:table-cell">
         {pct(team.sweet16)}%
       </td>
 
-      {/* Upset Wins */}
       <td className="px-3 py-3 text-right text-[13px] text-[#6c6e6f] tabular-nums font-mono hidden lg:table-cell">
         {team.upsetWins.toLocaleString()}
       </td>

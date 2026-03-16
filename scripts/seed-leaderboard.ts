@@ -299,9 +299,6 @@ async function main() {
   // Clear existing leaderboard data
   await redis.del("leaderboard");
 
-  // We need to import the bracket data - load it dynamically
-  // Since we can't use @/ aliases in scripts, we'll construct the bracket inline
-  // by importing the compiled module
   const bracketModule = await import("../lib/bracket-data");
   const bracket = bracketModule.BRACKET_2026 as unknown as Bracket;
 

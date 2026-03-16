@@ -197,11 +197,9 @@ export function MatchupStatsPanel({
 
   return (
     <div className={shell}>
-      {/* Header */}
       <div className={`${sectionPad} border-b ${sectionBorder}`}>
         <div className={`${labelClass} mb-3`}>Matchup</div>
-        
-        {/* Team 1 */}
+
         <div className="mb-4">
           <TeamHeader
             team={team1}
@@ -211,14 +209,12 @@ export function MatchupStatsPanel({
           />
         </div>
 
-        {/* VS divider */}
         <div className="flex items-center gap-3 my-3">
           <div className={`flex-1 h-px ${panel ? "bg-[#e4e5e7]" : "bg-[#dcdddf]"}`} />
           <span className="text-[11px] font-medium text-[#8b8d8f]">vs</span>
           <div className={`flex-1 h-px ${panel ? "bg-[#e4e5e7]" : "bg-[#dcdddf]"}`} />
         </div>
 
-        {/* Team 2 */}
         <div>
           <TeamHeader
             team={team2}
@@ -234,7 +230,6 @@ export function MatchupStatsPanel({
         )}
       </div>
 
-      {/* KenPom Stats Comparison */}
       {stats1 && stats2 && (
         <div className={`${sectionPad} border-b ${sectionBorder}`}>
           <div className={`${labelClass} mb-3`}>KenPom</div>
@@ -292,14 +287,12 @@ export function MatchupStatsPanel({
         </div>
       )}
 
-      {/* Historical Seed Matchup Data */}
       {matchupStats && (
         <div className={`${sectionPad} border-b ${sectionBorder}`}>
           <div className={`${labelClass} mb-3`}>
             History · {matchupKey.toUpperCase()}
           </div>
           
-          {/* Win percentage bar */}
           <div className="mb-3">
             <div className="flex justify-between text-[12px] mb-1">
               <span className="text-[#121213]">
@@ -331,7 +324,6 @@ export function MatchupStatsPanel({
         </div>
       )}
 
-      {/* Notes (matchup + team + optional round tournament facts) */}
       {mergedNotes.length > 0 && (
         <div className={sectionPad}>
           <div className={`${labelClass} mb-3`}>Notes</div>
