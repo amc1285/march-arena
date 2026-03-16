@@ -44,6 +44,7 @@ const CHAMP_PLACEHOLDER = placeholderGame("champ");
 export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracket> {
   "use workflow";
 
+  const writable = getWritable<string>();
   const completedStages: SimulationStage[] = [];
   let tournamentContext: TournamentContext = {
     upsets: [],
@@ -61,6 +62,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
   ]);
 
   const firstFourStepResult = await simulateFirstFourRound(
+    writable,
     bracket.firstFour.map((g) => ({ ...g, status: "scheduled" as const })),
     {
       roundName: "First Four",
@@ -96,7 +98,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
     ...placeholderRoundsFrom(region, 1),
   ]);
 
-  await emitProgress(buildWorkflowStreamPayload(
+  await emitProgress(writable, buildWorkflowStreamPayload(
     bracket, firstFourResults, cloneDisplay(regionDisplay),
     FF_PLACEHOLDERS.map((g) => ({ ...g })),
     { ...CHAMP_PLACEHOLDER },
@@ -155,7 +157,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
     );
 
     const roundResult = await simulateRegionalRound(
-      roundIdx, jobs, regionDisplay, bracket, firstFourResults,
+      writable, roundIdx, jobs, regionDisplay, bracket, firstFourResults,
       stage, [...completedStages], tournamentContext, SIM_GAME_CONCURRENCY,
     );
     regionDisplay = roundResult.regionDisplay;
@@ -186,6 +188,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
   ];
 
   const finalsResult = await simulateFinalsRound(
+    writable,
     finalFourGames,
     {
       roundName: "Final Four",
@@ -205,7 +208,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
   completedStages.push("finals");
 
   // ── 6. Final emission with winner ──────────────────────────────────
-  await emitProgress({
+  await emitProgress(writable, {
     ...buildWorkflowStreamPayload(
       bracket,
       firstFourResults,
@@ -217,7 +220,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
     ),
     winner: finalsResult.winner,
   });
-  await closeProgressStream();
+  await closeProgressStream(writable);
 
   // ── Build return value ─────────────────────────────────────────────
   return {
@@ -241,6 +244,7 @@ export async function simulateBracket(bracket: Bracket): Promise<SimulatedBracke
 // ══════════════════════════════════════════════════════════════════════
 
 async function simulateFirstFourRound(
+  writable: WritableStream<string>,
   games: Game[],
   baseContext: { roundName: string; location?: string },
   bracket: Bracket,
@@ -254,7 +258,6 @@ async function simulateFirstFourRound(
 }> {
   "use step";
 
-  const writable = getWritable<string>();
   const display = games.map((g) => ({ ...g }));
   const ctx = JSON.parse(JSON.stringify(tournamentContext)) as TournamentContext;
   const results: SimulatedGame[] = [];
@@ -309,6 +312,7 @@ async function simulateFirstFourRound(
 // ══════════════════════════════════════════════════════════════════════
 
 async function simulateRegionalRound(
+  writable: WritableStream<string>,
   roundIdx: number,
   jobs: Array<{ game: Game; regionIdx: number; context: GameContext }>,
   regionDisplay: Game[][][],
@@ -324,7 +328,6 @@ async function simulateRegionalRound(
 }> {
   "use step";
 
-  const writable = getWritable<string>();
   const display = cloneDisplay(regionDisplay);
   const ctx = JSON.parse(JSON.stringify(tournamentContext)) as TournamentContext;
 
@@ -390,6 +393,7 @@ async function simulateRegionalRound(
 // ══════════════════════════════════════════════════════════════════════
 
 async function simulateFinalsRound(
+  writable: WritableStream<string>,
   finalFourGames: Game[],
   finalFourBaseContext: { roundName: string; location?: string },
   championshipBaseContext: { roundName: string; location?: string },
@@ -406,7 +410,6 @@ async function simulateFinalsRound(
 }> {
   "use step";
 
-  const writable = getWritable<string>();
   const display = cloneDisplay(regionDisplay);
   const ctx = JSON.parse(JSON.stringify(tournamentContext)) as TournamentContext;
 
@@ -493,17 +496,16 @@ async function simulateFinalsRound(
 // Utility steps (lightweight, called sparingly)
 // ══════════════════════════════════════════════════════════════════════
 
-async function emitProgress(update: SimulationProgress): Promise<void> {
+async function emitProgress(writable: WritableStream<string>, update: SimulationProgress): Promise<void> {
   "use step";
 
-  const writable = getWritable<string>();
   const writer = writable.getWriter();
   await writer.write(JSON.stringify(update) + "\n");
   writer.releaseLock();
 }
 
-async function closeProgressStream(): Promise<void> {
+async function closeProgressStream(writable: WritableStream<string>): Promise<void> {
   "use step";
 
-  await getWritable<string>().close();
+  await writable.close();
 }
